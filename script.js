@@ -106,7 +106,7 @@ const game = (function Gameboard() {
         if (!gameboard[row][column].getMark()) {
             gameboard[row][column].putMark(userMark);
         } else {
-            console.log('Cell taken. Please chose another cell');
+            alert('Cell taken. Please chose another cell');
         }
     }
 
@@ -129,20 +129,57 @@ function Cell() {
     return { getMark, putMark }
 }
 
-const gameController = (function GameController() {
+const gameController = (async function GameController() {
 
     game.initGameBoard();
 
-    // testing
-    game.updateGameboard(0, 0, 'X');
-    game.updateGameboard(1, 0, 'X');
-    game.updateGameboard(2, 0, 'X');
-    
-    game.showGameboard();
+    let userX = {
+        name: 'miau',
+        choice: [],
+        mark: 'X'
+    };
 
-    const winner = game.checkWin();
+    let userO = {
+        name: 'miau',
+        choice: [],
+        mark: 'O'
+    };
+
+    let winner = null;
+    while (!winner) {
+        console.clear();
+        game.showGameboard()
+
+        userX.choice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
+        // TODO: implement check if the user cancels the prompt
+        // TODO: implement check if the input is outside the gameboard 
+        const [rowX, colX] = userX.choice;
+        game.updateGameboard(rowX, colX, userX.mark);
+        console.clear();
+        game.showGameboard()
+        winner = game.checkWin();
+
+        if (winner) break;
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        userO.choice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
+        const [rowO, colO] = userO.choice;
+
+        game.updateGameboard(rowO, colO, userO.mark);
+
+        console.clear();
+        game.showGameboard()
+
+        winner = game.checkWin();
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+    }
     if (winner) console.log('Winner: ', winner);
 
+    // game.clearBoard();
+    // game.initGameBoard();
+    // game.showGameboard();
 
 })();
 
