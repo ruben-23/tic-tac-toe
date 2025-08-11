@@ -129,32 +129,76 @@ function Cell() {
     return { getMark, putMark }
 }
 
+function Player(name, mark) {
+    let choice = [];
+    let score = 0;
+
+    const increaseScore = function() {
+        score++;
+    }
+
+    const getMark = function() {
+        return mark; 
+    }
+
+    const setChoice = function(arr) {
+        choice = arr;
+    }
+
+    const getChoice = function(){
+        // return { row: choice[0], column: choice[1] }
+        return choice;
+    }
+
+    const getName = function(){
+        return name;
+    }
+
+    return { increaseScore, getMark, getChoice, setChoice, getName }
+
+}
+
+
 const gameController = (async function GameController() {
 
     game.initGameBoard();
 
-    let userX = {
-        name: 'miau',
-        choice: [],
-        mark: 'X'
-    };
+    // let playerOne = {
+    //     name: 'miau',
+    //     choice: [],
+    //     mark: 'X',
+    //     score: 0
+    // };
 
-    let userO = {
-        name: 'miau',
-        choice: [],
-        mark: 'O'
-    };
+    // let playerTwo = {
+    //     name: 'ham',
+    //     choice: [],
+    //     mark: 'O',
+    //     score: 0
+    // };
+
+    let playerOneName = prompt('Enter your name: ');
+    alert(`${playerOneName} will be X`);
+    let playerTwoName = prompt('Enter your name: ');
+    alert(`${playerTwoName} will be Y`);
+
+    let playerOne = Player(playerOneName, 'X');
+    let playerTwo = Player(playerTwoName, 'O');
+    
 
     let winner = null;
     while (!winner) {
         console.clear();
         game.showGameboard()
 
-        userX.choice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
+        playerOneChoice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
         // TODO: implement check if the user cancels the prompt
         // TODO: implement check if the input is outside the gameboard 
-        const [rowX, colX] = userX.choice;
-        game.updateGameboard(rowX, colX, userX.mark);
+        
+        playerOne.setChoice(playerOneChoice);
+        const [rowX, colX] = playerOne.getChoice();
+    
+        game.updateGameboard(rowX, colX, playerOne.getMark());
         console.clear();
         game.showGameboard()
         winner = game.checkWin();
@@ -163,10 +207,12 @@ const gameController = (async function GameController() {
 
         await new Promise(resolve => setTimeout(resolve, 3000));
 
-        userO.choice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
-        const [rowO, colO] = userO.choice;
+        playerTwoChoice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
+        
+        playerTwo.setChoice(playerTwoChoice);
+        const [rowO, colO] = playerTwo.getChoice();
 
-        game.updateGameboard(rowO, colO, userO.mark);
+        game.updateGameboard(rowO, colO, playerTwo.getMark());
 
         console.clear();
         game.showGameboard()
