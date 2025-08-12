@@ -133,49 +133,53 @@ function Player(name, mark) {
     let choice = [];
     let score = 0;
 
-    const increaseScore = function() {
+    const increaseScore = function () {
         score++;
     }
 
-    const getMark = function() {
-        return mark; 
+    const getMark = function () {
+        return mark;
     }
 
-    const setChoice = function(arr) {
+    const setChoice = function (arr) {
         choice = arr;
     }
 
-    const getChoice = function(){
+    const getChoice = function () {
         // return { row: choice[0], column: choice[1] }
         return choice;
     }
 
-    const getName = function(){
+    const getName = function () {
         return name;
     }
 
-    return { increaseScore, getMark, getChoice, setChoice, getName }
+    const getScore = function () {
+        return score;
+    }
+
+    return { increaseScore, getMark, getChoice, setChoice, getName, getScore }
 
 }
 
 
 const gameController = (async function GameController() {
 
+    const checkWinner = function () {
+        const winner = game.checkWin();      
+
+        if (winner) {
+            console.log('Round winner: ', winner);
+            game.clearBoard();
+            game.initGameBoard();
+            return true;
+        }
+        return false;
+
+    }
+    const maxScore = 3;
+
     game.initGameBoard();
-
-    // let playerOne = {
-    //     name: 'miau',
-    //     choice: [],
-    //     mark: 'X',
-    //     score: 0
-    // };
-
-    // let playerTwo = {
-    //     name: 'ham',
-    //     choice: [],
-    //     mark: 'O',
-    //     score: 0
-    // };
 
     let playerOneName = prompt('Enter your name: ');
     alert(`${playerOneName} will be X`);
@@ -184,48 +188,48 @@ const gameController = (async function GameController() {
 
     let playerOne = Player(playerOneName, 'X');
     let playerTwo = Player(playerTwoName, 'O');
-    
 
-    let winner = null;
-    while (!winner) {
+    while (playerOne.getScore() !== maxScore && playerTwo.getScore() !== maxScore) {
         console.clear();
         game.showGameboard()
 
         playerOneChoice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
         // TODO: implement check if the user cancels the prompt
         // TODO: implement check if the input is outside the gameboard 
-        
+
         playerOne.setChoice(playerOneChoice);
         const [rowX, colX] = playerOne.getChoice();
-    
+
         game.updateGameboard(rowX, colX, playerOne.getMark());
         console.clear();
         game.showGameboard()
-        winner = game.checkWin();
 
-        if (winner) break;
+        if (!checkWinner()) {
+            // await new Promise(resolve => setTimeout(resolve, 3000));
 
-        await new Promise(resolve => setTimeout(resolve, 3000));
+            playerTwoChoice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
 
-        playerTwoChoice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
-        
-        playerTwo.setChoice(playerTwoChoice);
-        const [rowO, colO] = playerTwo.getChoice();
+            playerTwo.setChoice(playerTwoChoice);
+            const [rowO, colO] = playerTwo.getChoice();
 
-        game.updateGameboard(rowO, colO, playerTwo.getMark());
+            game.updateGameboard(rowO, colO, playerTwo.getMark());
 
-        console.clear();
-        game.showGameboard()
+            console.clear();
+            game.showGameboard()
 
-        winner = game.checkWin();
-        await new Promise(resolve => setTimeout(resolve, 3000));
+            if (checkWinner()){
+                playerTwo.increaseScore();
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+            
+        } else {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            playerOne.increaseScore();
+        }
 
     }
-    if (winner) console.log('Winner: ', winner);
-
-    // game.clearBoard();
-    // game.initGameBoard();
-    // game.showGameboard();
+    let finalWinner = playerOne.getScore() === maxScore ? playerOne.getName() : playerTwo.getName();
+    console.log('Final Winner: ', finalWinner);
 
 })();
 
