@@ -102,6 +102,16 @@ const game = (function Gameboard() {
         return false;
     }
 
+    const allCellsMarked = function () {
+        for (let i = 0; i < gameboardSize; ++i) {
+            for (let j = 0; j < gameboardSize; ++j) {
+                if (gameboard[i][j].getMark() === '')
+                    return false;
+            }
+        }
+        return true;
+    }
+
     const updateGameboard = function (row, column, userMark) {
         if (!gameboard[row][column].getMark()) {
             gameboard[row][column].putMark(userMark);
@@ -110,7 +120,7 @@ const game = (function Gameboard() {
         }
     }
 
-    return { getGameboard, clearBoard, addCellToGameboard, showGameboard, updateGameboard, initGameBoard, checkWin };
+    return { getGameboard, clearBoard, addCellToGameboard, showGameboard, updateGameboard, initGameBoard, checkWin, allCellsMarked };
 
 })();
 
@@ -146,7 +156,6 @@ function Player(name, mark) {
     }
 
     const getChoice = function () {
-        // return { row: choice[0], column: choice[1] }
         return choice;
     }
 
@@ -166,12 +175,10 @@ function Player(name, mark) {
 const gameController = (async function GameController() {
 
     const checkWinner = function () {
-        const winner = game.checkWin();      
+        const winner = game.checkWin();
 
         if (winner) {
             console.log('Round winner: ', winner);
-            game.clearBoard();
-            game.initGameBoard();
             return true;
         }
         return false;
@@ -204,9 +211,26 @@ const gameController = (async function GameController() {
         console.clear();
         game.showGameboard()
 
-        if (!checkWinner()) {
-            // await new Promise(resolve => setTimeout(resolve, 3000));
+        // check if playerOne won
+        if (checkWinner()) {
+            playerOne.increaseScore();
+            console.log(`${playerOne.getName()} score: ${playerOne.getScore()}`);
+            console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            game.clearBoard();
+            game.initGameBoard();
 
+            // if not: 1. verify if not tie
+        } else if (game.allCellsMarked()) {
+            console.log("It's a tie");
+            console.log(`${playerOne.getName()} score: ${playerOne.getScore()}`);
+            console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            game.clearBoard();
+            game.initGameBoard();
+
+            //2. ask player two
+        } else {
             playerTwoChoice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
 
             playerTwo.setChoice(playerTwoChoice);
@@ -215,19 +239,29 @@ const gameController = (async function GameController() {
             game.updateGameboard(rowO, colO, playerTwo.getMark());
 
             console.clear();
-            game.showGameboard()
+            game.showGameboard();
 
-            if (checkWinner()){
+            // check if playerTwo won
+            if (checkWinner()) {
                 playerTwo.increaseScore();
-                await new Promise(resolve => setTimeout(resolve, 3000));
-            }
-            
-        } else {
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            playerOne.increaseScore();
-        }
+                console.log(`${playerOne.getName()} score: ${playerOne.getScore()}`);
+                console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                game.clearBoard();
+                game.initGameBoard();
 
+                // verify if not tie
+            } else if (game.allCellsMarked()) {
+                console.log("It's a tie");
+                console.log(`${playerOne.getName()} score: ${playerOne.getScore()}`);
+                console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                game.clearBoard();
+                game.initGameBoard();
+            }
+        }
     }
+
     let finalWinner = playerOne.getScore() === maxScore ? playerOne.getName() : playerTwo.getName();
     console.log('Final Winner: ', finalWinner);
 
