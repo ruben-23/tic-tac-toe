@@ -184,6 +184,7 @@ const gameController = (async function GameController() {
         return false;
 
     }
+    
     const maxScore = 3;
 
     game.initGameBoard();
@@ -265,5 +266,6 @@ const gameController = (async function GameController() {
     let finalWinner = playerOne.getScore() === maxScore ? playerOne.getName() : playerTwo.getName();
     console.log('Final Winner: ', finalWinner);
 
+    return { startGame };
 })();
 
