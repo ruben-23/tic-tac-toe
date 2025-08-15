@@ -184,7 +184,7 @@ const gameController = (async function GameController() {
         return false;
 
     }
-    
+
     const maxScore = 3;
 
     game.initGameBoard();
@@ -267,5 +267,24 @@ const gameController = (async function GameController() {
     console.log('Final Winner: ', finalWinner);
 
     return { startGame };
-})();
+});
 
+
+const displayController = (function() {
+
+    const startGameListener = function() {
+        const playerOneName = document.getElementById("player-one-name").value || 'Player One';
+        const playerTwoName = document.getElementById("player-two-name").value || 'Player Two';
+        console.log(playerOneName, playerTwoName);
+    }
+
+    const startGameButton = document.getElementById("start-game");
+    startGameButton.addEventListener('click', startGameListener);
+
+
+
+    
+
+
+
+})();
