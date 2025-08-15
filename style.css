@@ -5,4 +5,74 @@
 
 body {
     background-color: rgb(146, 151, 156);
+    width: 100vw;
+    height: 100vh;
+     display: grid;
+    grid-template-rows: 0.8fr 5fr;
+}
+
+
+.header {
+    background-color: red;
+    display: grid;
+    justify-content: center;
+    align-content: end;
+}
+
+h1 {
+    font-size: 5rem;
+}
+
+.main-content {
+    background-color: rgb(240, 240, 255);
+    width: 70vw;
+    display: grid;
+    /* justify-content: center; */
+    grid-template-rows: 5fr 0.5fr;
+    align-content: center;
+    justify-self: center;
+
+}
+
+.main-content h2 {
+    padding: 0.6rem;
+    text-align: center;
+    /* font-size: larger; */
+}
+
+h2::before {
+    content: ' ᯽ ';
+}
+
+h2::after {
+    content: ' ᯽ ';
+}
+
+.game-container {
+    background-color: aqua;
+    display: grid;
+    /* width: 80%; */
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1.5fr;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.gameboard {
+    width: 25rem;
+    height: 30rem;
+    border: 1px solid black;
+}
+
+.game {
+    display: grid;
+    justify-content: start;
+    align-content: center;
+}
+
+.players-info {
+    padding: 20px;
+    display: grid;
+    align-self: center;
+    justify-self: end;
 }
