@@ -126,6 +126,7 @@ button {
     border: 1px solid #9e9fee;
     border-radius: 15px;
     color: #ffffff;
+    cursor: pointer;
 }
 
 button:hover {
@@ -135,6 +136,7 @@ button:hover {
 button:disabled{
     opacity: 0.8;
     background-color: #2dc7fa;
+    cursor: not-allowed;
 }
 
 .score {
