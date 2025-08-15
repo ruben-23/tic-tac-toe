@@ -4,7 +4,7 @@
 }
 
 body {
-    background-color: rgb(146, 151, 156);
+    background-color: #f9fbfc;
     width: 100vw;
     height: 100vh;
      display: grid;
@@ -14,7 +14,7 @@ body {
 
 
 .header {
-    background-color: red;
+    background-color: #d3edff;
     display: grid;
     justify-content: center;
     align-content: end;
@@ -25,21 +25,21 @@ h1 {
 }
 
 .main-content {
-    background-color: rgb(240, 240, 255);
     width: 70vw;
     display: grid;
-    /* justify-content: center; */
-    grid-template-rows: 5fr 0.5fr;
     align-content: center;
     justify-self: center;
 
 }
 
-.main-content h2 {
+.footer {
+    background-color: #1E3A8A;
+}
+
+.footer h2 {
     padding: 0.6rem;
     text-align: center;
-    /* font-size: larger; */
-    color: #333333;
+    color: #ffffff;
 }
 
 h2::before {
@@ -50,18 +50,26 @@ h2::after {
     content: ' ᯽ ';
 }
 
+h3{
+    background-color: #1E3A8A;
+    color: #FCD34D;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 22px;
+}
+
 .game-container {
-    background-color: aqua;
     display: grid;
-    /* width: 80%; */
     grid-auto-flow: column;
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: 1fr 1.2fr;
     justify-content: center;
     gap: 1rem;
 }
 
 .gameboard {
-    width: 25rem;
+    width: 30rem;
     height: 30rem;
     border: 1px solid black;
 }
@@ -70,6 +78,12 @@ h2::after {
     display: grid;
     justify-content: start;
     align-content: center;
+    justify-items: center;
+    gap: 1rem
+}
+
+.game h3 {
+    font-size: 25px;
 }
 
 .players-info {
@@ -77,7 +91,9 @@ h2::after {
     display: grid;
     align-self: center;
     justify-self: end;
-    gap: 5rem;
+    grid-template-rows: 5fr 3fr;
+    gap: 2rem;
+    align-items: start;
 }
 
 .players-info form {
@@ -97,6 +113,9 @@ h2::after {
 
 .players-info form input{
     font-size: 20px;
+    padding: 0.3rem;
+    border: 1px solid rgb(100, 145, 204);
+    border-radius: 5px;
 }
 
 button {
@@ -114,6 +133,22 @@ button:hover {
 }
 
 button:disabled{
-    opacity: 0.6;
+    opacity: 0.8;
     background-color: #2dc7fa;
+}
+
+.score {
+    display: grid;
+    gap: 1.5rem;
+    justify-content: start;
+    display: grid;
+    font-size: 18px;
+}
+
+.score h4 {
+    background-color: #3B82F6;
+    color: #f7f7f7;
+    border-radius: 10px;
+    padding: 5px;
+    text-align: center;
 }
