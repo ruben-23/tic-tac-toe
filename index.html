@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="./style.css">
-    <script src="./script.js"></script>
+    
 </head>
 
 <body>
@@ -19,31 +19,31 @@
         <div class="game-container">
 
             <div class="players-info">
-                <form action="">
+                <form action="" id="player-form">
                     <p>
-                        <label for="">Player One Name</label>
-                        <input type="text">
+                        <label for="player-one-name">Player One Name (X)</label>
+                        <input type="text" id="player-one-name" name="player-one-name" placeholder="Player One">
                     </p>
                     <p>
-                        <label for="">Player Two Name</label>
-                        <input type="text">
+                        <label for="player-two-name">Player Two Name (O)</label>
+                        <input type="text" id="player-two-name" name="player-two-name" placeholder="Player Two">
                     </p>
-                    <button type="submit">Start Game</button>
+                    <button type="button" id="start-game" form="player-form">Start Game</button>
                 </form>
                 <div class="score">
-                    <h4>👤 Player1 Score: <b>3</b></h4>
+                    <h4 id="player-one-score">👤 Player1 Score: <b>3</b></h4>
                     
-                    <h4>👤 Player2 Score: <b>2</b></h4>
-                    <h3>🏆 Final winner: miau</h3>
+                    <h4 id="player-two-score">👤 Player2 Score: <b>2</b></h4>
+                    <h3 id="final-winner">🏆 Final winner: miau</h3>
                 </div>
             </div>
 
             <div class="game">
 
-                <h3 class="message">X won this round</h3>
+                <h3 class="round-winner-message">X won this round</h3>
                 <div class="gameboard"></div>
                 <div class="actions">
-                    <button disabled>Play Again</button>
+                    <button disabled id="play-again">Play Again</button>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
         </div>
     </div>
 
-
+    <script src="./script.js"></script>
 </body>
 
 </html>
