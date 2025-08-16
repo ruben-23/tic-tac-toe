@@ -299,11 +299,13 @@ const displayController = (function () {
     const updateFinalWinnerElem = function (winnerName = '') {
 
         const finalWinner = document.getElementById('final-winner');
-        finalWinner.textContent += ` ${winnerName}`;
+
 
         if (winnerName) {
+            finalWinner.textContent = `🏆 Final winner: ${winnerName}`;
             finalWinner.classList.remove('hidden');
         } else {
+            finalWinner.textContent = `🏆 Final winner:`
             finalWinner.classList.add('hidden');
         }
     }
@@ -413,6 +415,8 @@ const displayController = (function () {
         displayGameboard();
         updateScoreElements();
         updateFinalWinnerElem();
+        const message = `${gameController.getCurrentPlayer().getName()}'s turn`;
+        updateGameMessageElem(message);
         disablePlayAgainButton();
     }
 
