@@ -148,7 +148,7 @@ function Cell() {
 
 function Player(name, mark) {
     let choice = [];
-    let score = 2;
+    let score = 0;
 
     const increaseScore = function () {
         score++;
@@ -252,13 +252,16 @@ const gameController = (function GameController() {
 
     const playRound = function (row, col) {
 
+        // reset the winner of previous round
+        if(winner) winner = null;
+
         // proceed only if the update is successful
         if (game.updateGameboard(row, col, currentPlayer.getMark())) {
             // check if currentPlayer won
             if (checkWinner()) {
                 currentPlayer.increaseScore();
-                isGameRunning = false;
                 if(gameFinished()) isgameFinished = true;
+                isGameRunning = false;
                 return winner;
 
                 // if not - verify if not tie
@@ -271,11 +274,17 @@ const gameController = (function GameController() {
             }
             switchCurrentPlayer();
         }
-        
+
         return false;
     }
 
-    return { playRound, startGame, getIsGameRunning, getIsGameFinished, getWinner, getCurrentPlayer, getPlayerOneScore, getPlayerTwoScore, getPlayerOneName, getPlayerTwoName };
+    const resetGameboard = function() {
+        game.clearBoard();
+        game.initGameBoard();
+        isGameRunning = true;
+    }
+
+    return { playRound, startGame, getIsGameRunning, getIsGameFinished, getWinner, getCurrentPlayer, getPlayerOneScore, getPlayerTwoScore, getPlayerOneName, getPlayerTwoName, resetGameboard };
 })();
 
 
@@ -316,6 +325,7 @@ const displayController = (function () {
             message = `It's a tie`;
         } else if (winner) {
             message = `🎉 ${winner.getName()} won this round`;
+            enableNextRoundButton();
         } else {
             message = `${gameController.getCurrentPlayer().getName()}'s turn`;
         }
@@ -370,9 +380,26 @@ const displayController = (function () {
 
     }
 
+    const nextRoundListener = function() {
+        gameController.resetGameboard();
+        displayGameboard();
+        this.disabled = true;
+    }
+
+    const enableNextRoundButton = function() {
+        nextRoundButton.disabled = false;
+    }
+
+    const disableNextRoundButton = function() {
+        nextRoundButton.disabled = true;
+    }
+
     const startGameButton = document.getElementById("start-game");
     startGameButton.addEventListener('click', startGameListener);
+    const playAgainButton = document.getElementById('play-again');
 
+    const nextRoundButton = document.getElementById('next-round');
+    nextRoundButton.addEventListener('click', nextRoundListener);
 
     displayGameboard();
 
