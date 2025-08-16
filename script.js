@@ -115,13 +115,15 @@ const game = (function Gameboard() {
     const updateGameboard = function (row, column, userMark) {
         if (!gameboard[row][column].getMark()) {
             gameboard[row][column].putMark(userMark);
+            return true;
         } else {
             alert('Cell taken. Please chose another cell');
+            return false;
         }
     }
 
 
-    const getGameboardSize = function() {
+    const getGameboardSize = function () {
         return gameboardSize;
     }
 
@@ -131,7 +133,7 @@ const game = (function Gameboard() {
 
 
 function Cell() {
-    let mark = '-';
+    let mark = '';
 
     const getMark = function () {
         return mark;
@@ -146,7 +148,7 @@ function Cell() {
 
 function Player(name, mark) {
     let choice = [];
-    let score = 0;
+    let score = 2;
 
     const increaseScore = function () {
         score++;
@@ -177,110 +179,158 @@ function Player(name, mark) {
 }
 
 
-const gameController = ( function GameController() {
+const gameController = (function GameController() {
+
+    const maxScore = 3;
+    let playerOne = null;
+    let playerTwo = null;
+    let currentPlayer = null;
+    let isGameRunning = false;
+    let isgameFinished= false;
+    let winner = null;
 
     const checkWinner = function () {
-        const winner = game.checkWin();
+        winner = game.checkWin() === currentPlayer.getMark() ? currentPlayer : null;
 
         if (winner) {
-            console.log('Round winner: ', winner);
+            console.log('Round winner: ', winner.getName());
             return true;
         }
         return false;
 
     }
 
-    const maxScore = 3;
-
     game.initGameBoard();
 
-    // let playerOneName = prompt('Enter your name: ');
-    // alert(`${playerOneName} will be X`);
-    // let playerTwoName = prompt('Enter your name: ');
-    // alert(`${playerTwoName} will be Y`);
+    const startGame = function (playerOneName, playerTwoName) {
 
-    const playGame =  function(playerOneName, playerTwoName) {
-        
-        let playerOne = Player(playerOneName, 'X');
-        let playerTwo = Player(playerTwoName, 'O');
-
-        while (playerOne.getScore() !== maxScore && playerTwo.getScore() !== maxScore) {
-            console.clear();
-            game.showGameboard()
-
-            playerOneChoice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
-            // TODO: implement check if the user cancels the prompt
-            // TODO: implement check if the input is outside the gameboard 
-
-            playerOne.setChoice(playerOneChoice);
-            const [rowX, colX] = playerOne.getChoice();
-
-            game.updateGameboard(rowX, colX, playerOne.getMark());
-            console.clear();
-            game.showGameboard()
-
-            // check if playerOne won
-            if (checkWinner()) {
-                playerOne.increaseScore();
-                console.log(`${playerOne.getName()} score: ${playerOne.getScore()}`);
-                console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
-                // await new Promise(resolve => setTimeout(resolve, 5000));
-                game.clearBoard();
-                game.initGameBoard();
-
-                // if not: 1. verify if not tie
-            } else if (game.allCellsMarked()) {
-                console.log("It's a tie");
-                console.log(`${playerOne.getName()} score: ${playerOne.getScore()}`);
-                console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
-                // await new Promise(resolve => setTimeout(resolve, 5000));
-                game.clearBoard();
-                game.initGameBoard();
-
-                //2. ask player two
-            } else {
-                playerTwoChoice = prompt('Enter the row and column (e.g. 1 1)').split(' ').map(Number);
-
-                playerTwo.setChoice(playerTwoChoice);
-                const [rowO, colO] = playerTwo.getChoice();
-
-                game.updateGameboard(rowO, colO, playerTwo.getMark());
-
-                console.clear();
-                game.showGameboard();
-
-                // check if playerTwo won
-                if (checkWinner()) {
-                    playerTwo.increaseScore();
-                    console.log(`${playerOne.getName()} score: ${playerOne.getScore()}`);
-                    console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
-                    // await new Promise(resolve => setTimeout(resolve, 5000));
-                    game.clearBoard();
-                    game.initGameBoard();
-
-                    // verify if not tie
-                } else if (game.allCellsMarked()) {
-                    console.log("It's a tie");
-                    console.log(`${playerOne.getName()} score: ${playerOne.getScore()}`);
-                    console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
-                    // await new Promise(resolve => setTimeout(resolve, 5000));
-                    game.clearBoard();
-                    game.initGameBoard();
-                }
-            }
-        }
-
-        let finalWinner = playerOne.getScore() === maxScore ? playerOne.getName() : playerTwo.getName();
-        console.log('Final Winner: ', finalWinner);
+        playerOne = Player(playerOneName, 'X');
+        playerTwo = Player(playerTwoName, 'O');
+        currentPlayer = playerOne;
+        isGameRunning = true;
     }
 
-    return { playGame };
+    const switchCurrentPlayer = function () {
+        currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+    }
+
+    const getCurrentPlayer = function () {
+        return currentPlayer;
+    }
+
+    const getIsGameRunning = function () {
+        return isGameRunning;
+    }
+
+    const getIsGameFinished = function() {
+        return isgameFinished;
+    }
+
+    const getWinner = function() {
+        return winner;
+    }
+
+    const getPlayerOneScore = function() {
+        return playerOne.getScore();
+    }
+
+    const getPlayerTwoScore = function() {
+        return playerTwo.getScore();
+    }
+
+    const getPlayerOneName = function() {
+        return playerOne.getName();
+    }
+
+    const getPlayerTwoName = function() {
+        return playerTwo.getName();
+    }
+
+    const gameFinished = function() {
+        return playerOne.getScore() === maxScore || playerTwo.getScore() === maxScore
+    }
+
+    const playRound = function (row, col) {
+
+        // proceed only if the update is successful
+        if (game.updateGameboard(row, col, currentPlayer.getMark())) {
+            // check if currentPlayer won
+            if (checkWinner()) {
+                currentPlayer.increaseScore();
+                isGameRunning = false;
+                if(gameFinished()) isgameFinished = true;
+                return winner;
+
+                // if not - verify if not tie
+            } else if (game.allCellsMarked()) {
+                // alert("It's a tie");
+                console.log(`${currentPlayer.getName()} score: ${currentPlayer.getScore()}`);
+                console.log(`${playerTwo.getName()} score: ${playerTwo.getScore()}`);
+                isGameRunning = false;
+                return 'tie';
+            }
+            switchCurrentPlayer();
+        }
+        
+        return false;
+    }
+
+    return { playRound, startGame, getIsGameRunning, getIsGameFinished, getWinner, getCurrentPlayer, getPlayerOneScore, getPlayerTwoScore, getPlayerOneName, getPlayerTwoName };
 })();
 
 
-const displayController = (function() {
+const displayController = (function () {
 
-    const createCellElement = function(mark, row, column) {
+    const displayFinalWinner = function(winnerName) {
+        const finalWinner = document.getElementById('final-winner');
+        finalWinner.textContent += ` ${winnerName}`;
+        finalWinner.classList.remove('hidden');
+    }
+
+    const updateGameMessageElem = function(message) {
+        const gameMessage = document.getElementById('game-message');
+        gameMessage.textContent = message;
+    }
+
+    const updateScoreElements = function () {
+        const playerOneScoreElem = document.getElementById('player-one-score');
+        const playerTwoScoreElem = document.getElementById('player-two-score');
+
+        playerOneScoreElem.textContent = `👤 ${gameController.getPlayerOneName()}: ${gameController.getPlayerOneScore()}`;
+        playerTwoScoreElem.textContent = `👤 ${gameController.getPlayerTwoName()}: ${gameController.getPlayerTwoScore()}`;
+    }
+
+    const updateGameboardListener = function (e) {
+        if (!gameController.getIsGameRunning() ) {
+            e.preventDefault();
+            return;
+        }
+
+        const row = this.getAttribute("data-row");
+        const col = this.getAttribute("data-column");
+
+        const winner = gameController.playRound(row, col);
+
+        let message = '';
+        if(winner == 'tie'){
+            message = `It's a tie`;
+        } else if (winner) {
+            message = `🎉 ${winner.getName()} won this round`;
+        } else {
+            message = `${gameController.getCurrentPlayer().getName()}'s turn`;
+        }
+
+        updateGameMessageElem(message);
+        updateScoreElements();
+
+        if(gameController.getIsGameFinished()){
+            displayFinalWinner(winner.getName());
+        }
+
+        displayGameboard();
+    }
+
+    const createCellElement = function (mark, row, column) {
         const cell = document.createElement('div');
         cell.textContent = mark;
         cell.setAttribute('class', 'cell');
@@ -290,7 +340,7 @@ const displayController = (function() {
         return cell;
     }
 
-    const displayGameboard = function(){
+    const displayGameboard = function () {
         const gameboard = game.getGameboard();
         console.log(gameboard)
         const gameboardSize = game.getGameboardSize();
@@ -298,21 +348,26 @@ const displayController = (function() {
         console.log(gameboardElement);
         gameboardElement.innerHTML = '';
 
-        for(let i=0; i<gameboardSize; ++i) {
-            for(let j=0; j<gameboardSize; ++j){
-                const currentCell = createCellElement(gameboard[i][j].getMark(), i, j); 
+        for (let i = 0; i < gameboardSize; ++i) {
+            for (let j = 0; j < gameboardSize; ++j) {
+                const currentCell = createCellElement(gameboard[i][j].getMark(), i, j);
+                currentCell.addEventListener('click', updateGameboardListener);
                 gameboardElement.appendChild(currentCell);
             }
         }
     }
 
-    const startGameListener = function() {
+    const startGameListener = function () {
+        this.setAttribute("disabled", "");
         const playerOneName = document.getElementById("player-one-name").value || 'Player One';
         const playerTwoName = document.getElementById("player-two-name").value || 'Player Two';
         console.log(playerOneName, playerTwoName);
+
         displayGameboard();
-        gameController.playGame(playerOneName, playerTwoName);
-        
+        gameController.startGame(playerOneName, playerTwoName);
+        updateScoreElements(playerOneName, playerTwoName);
+        updateGameMessageElem(`${playerOneName}'s turn`);
+
     }
 
     const startGameButton = document.getElementById("start-game");
@@ -320,7 +375,7 @@ const displayController = (function() {
 
 
     displayGameboard();
-    
+
 
 
 
