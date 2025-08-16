@@ -148,7 +148,7 @@ function Cell() {
 
 function Player(name, mark) {
     let choice = [];
-    let score = 0;
+    let score = 2;
 
     const increaseScore = function () {
         score++;
@@ -174,7 +174,11 @@ function Player(name, mark) {
         return score;
     }
 
-    return { increaseScore, getMark, getChoice, setChoice, getName, getScore }
+    const resetScore = function() {
+        score = 0;
+    }
+
+    return { increaseScore, getMark, getChoice, setChoice, getName, getScore, resetScore }
 
 }
 
@@ -284,17 +288,33 @@ const gameController = (function GameController() {
         isGameRunning = true;
     }
 
-    return { playRound, startGame, getIsGameRunning, getIsGameFinished, getWinner, getCurrentPlayer, getPlayerOneScore, getPlayerTwoScore, getPlayerOneName, getPlayerTwoName, resetGameboard };
+    const resetGameState = function() {
+        resetGameboard();
+        playerOne.resetScore();
+        playerTwo.resetScore();
+        currentPlayer = playerOne;
+        isgameFinished = false;
+    }
+
+    return { playRound, startGame, getIsGameRunning, getIsGameFinished, getWinner, getCurrentPlayer, getPlayerOneScore, getPlayerTwoScore, getPlayerOneName, getPlayerTwoName, resetGameboard, resetGameState };
 })();
 
 
 const displayController = (function () {
 
-    const displayFinalWinner = function(winnerName) {
+    const updateFinalWinnerElem = function(winnerName='') {
+
         const finalWinner = document.getElementById('final-winner');
         finalWinner.textContent += ` ${winnerName}`;
-        finalWinner.classList.remove('hidden');
+
+        if(winnerName) {
+            finalWinner.classList.remove('hidden');
+        } else {
+            finalWinner.classList.add('hidden');
+        }
+
     }
+
 
     const updateGameMessageElem = function(message) {
         const gameMessage = document.getElementById('game-message');
@@ -334,7 +354,9 @@ const displayController = (function () {
         updateScoreElements();
 
         if(gameController.getIsGameFinished()){
-            displayFinalWinner(winner.getName());
+            updateFinalWinnerElem(winner.getName());
+            enablePlayAgainButton();
+            disableNextRoundButton();
         }
 
         displayGameboard();
@@ -383,7 +405,7 @@ const displayController = (function () {
     const nextRoundListener = function() {
         gameController.resetGameboard();
         displayGameboard();
-        this.disabled = true;
+        disableNextRoundButton();
     }
 
     const enableNextRoundButton = function() {
@@ -394,9 +416,27 @@ const displayController = (function () {
         nextRoundButton.disabled = true;
     }
 
+    const playAgainListener = function() {
+        gameController.resetGameState();
+        displayGameboard();
+        updateScoreElements();
+        updateFinalWinnerElem();
+        disablePlayAgainButton();
+    } 
+
+    const enablePlayAgainButton = function() {
+        playAgainButton.disabled = false;
+    }
+
+    const disablePlayAgainButton = function() {
+        playAgainButton.disabled = true;
+    }
+
     const startGameButton = document.getElementById("start-game");
     startGameButton.addEventListener('click', startGameListener);
+
     const playAgainButton = document.getElementById('play-again');
+    playAgainButton.addEventListener('click', playAgainListener);
 
     const nextRoundButton = document.getElementById('next-round');
     nextRoundButton.addEventListener('click', nextRoundListener);
