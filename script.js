@@ -37,8 +37,10 @@ const game = (function Gameboard() {
     }
 
 
-    const checkRow = function (rowIndex) {
-        console.log('checking rows');
+    const checkRow = function (rowIndex) {        
+        // return if first cell is empty on the row
+        if(gameboard[rowIndex][0].getMark() === '') return false;
+
         for (let i = 0; i < gameboardSize - 1; ++i) {
             const currentCell = gameboard[rowIndex][i];
             const nextCell = gameboard[rowIndex][i + 1];
@@ -51,7 +53,8 @@ const game = (function Gameboard() {
     }
 
     const checkColumn = function (colIndex) {
-        console.log('checking columns');
+        // return if first cell is empty on the column
+        if(gameboard[0][colIndex].getMark() === '') return false;
         for (let i = 0; i < gameboardSize - 1; ++i) {
             const currentCell = gameboard[i][colIndex];
             const nextCell = gameboard[i + 1][colIndex];
@@ -63,7 +66,8 @@ const game = (function Gameboard() {
     }
 
     const checkPrimaryDiagonal = function () {
-        console.log('checking primary diagonal');
+        // return if first cell is empty on the primary diagonal
+        if(gameboard[0][0].getMark() === '') return false;
         for (let i = 0; i < gameboardSize - 1; ++i) {
             const currentCell = gameboard[i][i];
             const nextCell = gameboard[i + 1][i + 1];
@@ -75,7 +79,9 @@ const game = (function Gameboard() {
     }
 
     const checkSecondaryDiagonal = function () {
-        console.log('checking secondary diagonal');
+        // return if first cell is empty on the secondary diagonal
+        if(gameboard[0][gameboardSize-1].getMark() === '') return false;
+        
         for (let i = 0; i < gameboardSize - 1; ++i) {
             const currentCell = gameboard[i][gameboardSize - 1 - i];
             const nextCell = gameboard[i + 1][gameboardSize - 1 - (i + 1)];
@@ -93,12 +99,14 @@ const game = (function Gameboard() {
 
         for (let i = 0; i < gameboardSize; ++i) {
             // check win on rows and columns -> return the winner(X or O)
-            if (checkRow(i)) return gameboard[i][0].getMark();
-            if (checkColumn(i)) return gameboard[0][i].getMark()
+            if (checkRow(i)) { console.log(`returning at checkrow(${i})`); return gameboard[i][0].getMark();}
+            if (checkColumn(i)) {console.log(`returning at checkColumn(${i})`); return gameboard[0][i].getMark();   }
         }
 
         if (checkPrimaryDiagonal()) return gameboard[0][0].getMark();
         if (checkSecondaryDiagonal()) return gameboard[0][gameboardSize - 1].getMark();
+        
+        console.log('returning at last return(false)');
         return false;
     }
 
@@ -148,7 +156,7 @@ function Cell() {
 
 function Player(name, mark) {
     let choice = [];
-    let score = 2;
+    let score = 0;
 
     const increaseScore = function () {
         score++;
@@ -195,7 +203,7 @@ const gameController = (function GameController() {
 
     const checkWinner = function () {
         winner = game.checkWin() === currentPlayer.getMark() ? currentPlayer : null;
-
+        
         if (winner) {
             console.log('Round winner: ', winner.getName());
             return true;
@@ -285,6 +293,7 @@ const gameController = (function GameController() {
     const resetGameboard = function() {
         game.clearBoard();
         game.initGameBoard();
+        currentPlayer = playerOne;
         isGameRunning = true;
     }
 
@@ -342,11 +351,15 @@ const displayController = (function () {
 
         let message = '';
         if(winner == 'tie'){
+            console.log(1);
             message = `It's a tie`;
+            enableNextRoundButton();
         } else if (winner) {
+             console.log(2);
             message = `🎉 ${winner.getName()} won this round`;
             enableNextRoundButton();
         } else {
+             console.log(3);
             message = `${gameController.getCurrentPlayer().getName()}'s turn`;
         }
 
@@ -405,6 +418,8 @@ const displayController = (function () {
     const nextRoundListener = function() {
         gameController.resetGameboard();
         displayGameboard();
+        const message = `${gameController.getCurrentPlayer().getName()}'s turn`;
+        updateGameMessageElem(message);
         disableNextRoundButton();
     }
 
