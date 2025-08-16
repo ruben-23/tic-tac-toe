@@ -392,6 +392,7 @@ const displayController = (function () {
         updateScoreElements(playerOneName, playerTwoName);
         updateGameMessageElem(`${playerOneName}'s turn`);
 
+        document.getElementById("player-form").reset();
     }
 
     const nextRoundListener = function () {
