@@ -49,11 +49,11 @@ h1 {
 }
 
 h2::before {
-    content: ' ᯽ ';
+    content: url('./images/sword-svgrepo-com.svg');
 }
 
 h2::after {
-    content: ' ᯽ ';
+    content: url('./images/sword-svgrepo-com.svg');
 }
 
 h3{
